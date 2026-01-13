@@ -26,6 +26,12 @@ public class GestionTaches {
         }
     }
 
+    public void basculerTache(int index) {
+        if (index >= 0 && index < taches.size()) {
+            taches.get(index).basculerTerminee();
+        }
+    }
+
     public List<Tache> getTaches() {
         return taches;
     }

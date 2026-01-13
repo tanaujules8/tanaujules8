@@ -20,6 +20,14 @@ public class Tache {
         this.terminee = true;
     }
 
+    public void definirTerminee(boolean terminee) {
+        this.terminee = terminee;
+    }
+
+    public void basculerTerminee() {
+        this.terminee = !this.terminee;
+    }
+
     public boolean estTerminee() {
         return terminee;
     }

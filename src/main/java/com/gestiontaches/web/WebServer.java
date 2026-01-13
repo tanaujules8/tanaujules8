@@ -34,11 +34,16 @@ public class WebServer {
             saveTasksToFile(gestion.getTaches());
         }
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        int port = 8080;
+        String portEnv = System.getenv("PORT");
+        if (portEnv != null) {
+            try { port = Integer.parseInt(portEnv); } catch (Exception ignored) {}
+        }
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/", new RootHandler());
         server.createContext("/api/tasks", new ApiTasksHandler(gestion));
         server.setExecutor(null);
-        System.out.println("Web server started at http://localhost:8080");
+        System.out.println("Web server started at http://localhost:" + port);
         server.start();
     }
 
@@ -71,7 +76,7 @@ public class WebServer {
                     "<script>" +
                     "async function fetchTasks(){const r=await fetch('/api/tasks');const t=await r.json();render(t);}" +
                     "function escape(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;')}" +
-                    "function render(tasks){const root=document.getElementById('report');root.innerHTML='';let done='<h2>✔ Tâches terminées</h2>';let todo='<h2>⏳ Tâches non terminées</h2>';let dlist='';let tlist='';tasks.forEach((task,i)=>{const item=`<div class=\"task ${task.terminee? 'done':''}\"><strong>${escape(task.titre)}</strong>: ${escape(task.description)} <button onclick=\"toggle(${i})\">✓</button><button onclick=\"remove(${i})\">✖</button></div>`; if(task.terminee) dlist+=item; else tlist+=item;});root.innerHTML=done + dlist + todo + tlist;}" +
+                    "function render(tasks){const root=document.getElementById('report');root.innerHTML='';let done='<h2>✔ Tâches terminées</h2>';let todo='<h2>⏳ Tâches non terminées</h2>';let dlist='';let tlist='';tasks.forEach((task,i)=>{const item=`<div class=\"task ${task.terminee? 'done':''}\"><strong>${escape(task.titre)}</strong>: ${escape(task.description)} <button onclick=\"toggle(${i})\">${task.terminee? 'Démarquer':'Terminer'}</button><button onclick=\"remove(${i})\">✖</button></div>`; if(task.terminee) dlist+=item; else tlist+=item;});root.innerHTML=done + dlist + todo + tlist;}" +
                     "async function toggle(i){await fetch('/api/tasks/toggle?index='+i,{method:'POST'});fetchTasks();}" +
                     "async function remove(i){await fetch('/api/tasks?index='+i,{method:'DELETE'});fetchTasks();}" +
                     "document.getElementById('addForm').addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(e.target);await fetch('/api/tasks',{method:'POST',body:new URLSearchParams(fd)});e.target.reset();fetchTasks();});" +
@@ -143,16 +148,7 @@ public class WebServer {
             Map<String,String> params = parseQuery(query);
             int idx = parseIndex(params.get("index"));
             if (idx >= 0 && idx < gestion.getTaches().size()) {
-                if (gestion.getTaches().get(idx).estTerminee()) {
-                    // no unmark method, so recreate: crude approach
-                    // For simplicity, toggle by recreating state
-                    // If terminee -> do nothing (keep true), else mark true
-                    // We'll implement unmark by rebuilding list
-                    // Simpler: if terminee true -> nothing, else mark true
-                    gestion.getTaches().get(idx).marquerCommeTerminee();
-                } else {
-                    gestion.getTaches().get(idx).marquerCommeTerminee();
-                }
+                gestion.basculerTache(idx);
                 saveTasksToFile(gestion.getTaches());
                 sendResponse(exchange, 200, "{\"ok\":true}");
             } else {
