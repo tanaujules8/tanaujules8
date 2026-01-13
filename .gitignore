@@ -45,3 +45,6 @@ Thumbs.db
 
 # IDE / OS-specific
 *.swp
+
+# Compiled output
+out/
