@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Todo Final</string>
+    <string name="add">Add</string>
+    <string name="attach_photos">Attached photos: %1$d</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="description">Description</string>
+    <string name="due_date_hint">Due date yyyy-MM-dd</string>
+    <string name="edit">Edit</string>
+    <string name="gps">GPS</string>
+    <string name="latitude">Latitude</string>
+    <string name="located_tasks">Tasks on the map</string>
+    <string name="longitude">Longitude</string>
+    <string name="map">Map</string>
+    <string name="notification_title">Task due soon</string>
+    <string name="save">Save</string>
+    <string name="search">Search tasks</string>
+    <string name="tags">Tags</string>
+    <string name="task_detail">Task detail</string>
+    <string name="title">Title</string>
+</resources>
+
